@@ -5,6 +5,7 @@ root = tk.Tk();
 root.geometry("900x600") #Define o tamanho inicial da janela
 root.title("Projeto IA - Protótipo") #Titulo da janela
 root.iconbitmap("./Interface/IFTM.ico") #Icon da janela
+root.minsize(700, 400) #Define o tamanho minimo da janela
 
 #As configurações de expansão
 root.grid_rowconfigure(0, weight = 1)
@@ -13,8 +14,8 @@ root.grid_columnconfigure(1, weight = 1)
 #====================================================
 
 #?Definir os frames da janela
-textosLabel = tk.Frame(root, bg = "lightgray", highlightbackground="blue", highlightcolor="blue", highlightthickness=2) #Container que contêm os labels do programa
-funcaoBox = tk.Frame(root, bg = "lightgray", highlightbackground="blue", highlightcolor="blue", highlightthickness=2) #Container que contêm as funções de navegação e opção
+textosLabel = tk.Frame(root, bg = "lightgray") #Container que contêm os labels do programa
+funcaoBox = tk.Frame(root, bg = "lightgray") #Container que contêm as funções de navegação e opção
 
 
 #Suas posições na janela
