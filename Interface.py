@@ -1,4 +1,7 @@
 import tkinter as tk
+import pandas as pd
+import mysql.connector
+from tkinter import ttk
 
 #Inicia-se a janela principal
 root = tk.Tk();
@@ -25,22 +28,22 @@ funcaoBox.grid(row = 0, column = 1, sticky="nsew", padx = 20, pady = 20)
 
 #?Definir os objetos da janela
 #parte esquerda da tela, as labels
-campLabel = tk.Label(textosLabel, text="Campeonato", padx = 15, pady = 15)
+campLabel = tk.Label(textosLabel, text="Campeonato", padx = 3, pady = 3)
 timeLabel = tk.Label(textosLabel, text="Times", padx = 15, pady = 15)
 jogosLabel = tk.Label(textosLabel, text="Jogos", padx = 15, pady = 15)
 
 #Suas posições na janela
-campLabel.pack(padx = 5, pady = 5, expand = True, fill = "both")
+campLabel.pack(padx = 5, pady = 5, expand = False, fill = "both")
 timeLabel.pack(padx = 5, pady = 5, expand = True, fill = "both")
 jogosLabel.pack(padx = 5, pady = 5, expand = True, fill = "both")
 
 #parte direita da tela, as caixas funcionais
-campFun = tk.Button(funcaoBox, text = "Protótipo")
+campCombo = tk.ttk.Combobox(funcaoBox)
 timeFun = tk.Button(funcaoBox, text = "Protótipo")
 jogosFun = tk.Button(funcaoBox, text = "Protótipo")
 
 #Suas posições na janela
-campFun.pack(padx = 5, pady = 5, expand = True, fill = "both")
+campCombo.pack(padx = 5, pady = 5, expand = False, fill = "both")
 timeFun.pack(padx = 5, pady = 5, expand = True, fill = "both")
 jogosFun.pack(padx = 5, pady = 5, expand = True, fill = "both")
 
