@@ -2,6 +2,35 @@ import tkinter as tk
 import pandas as pd
 import mysql.connector
 from tkinter import ttk
+import os
+
+#Iniciando o database
+db = mysql.connector.connect(
+    host="localhost",
+    user="adm",
+    password="adm",
+    database="datafiles"
+)
+
+#Pegando os itens da data base
+CSVPath = "./DataBase"
+CSVFiles = os.listdir(CSVPath)
+
+# Criar a tabela de times
+cursor = db.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS times (Nome VARCHAR(255) PRIMARY KEY)")
+
+def atualizar_db():
+    cursor = db.cursor()
+    df = pd.read_csv(os.path.join(CSVPath, CSVFiles[0]))
+    for index, row in df.iterrows():
+        home_team = row['HomeTeam']
+        away_team = row['AwayTeam']
+        cursor.execute("INSERT IGNORE INTO times (Nome) VALUES (%s)", (home_team,))
+        cursor.execute("INSERT IGNORE INTO times (Nome) VALUES (%s)", (away_team,))
+    
+    db.commit()
+
 
 #Inicia-se a janela principal
 root = tk.Tk();
@@ -47,7 +76,7 @@ campCombo.pack(padx = 5, pady = 5, expand = False, fill = "both")
 timeFun.pack(padx = 5, pady = 5, expand = True, fill = "both")
 jogosFun.pack(padx = 5, pady = 5, expand = True, fill = "both")
 
-
+atualizar_db()
 #====================================================
 
 root.mainloop() #Inicializa a janela principal 

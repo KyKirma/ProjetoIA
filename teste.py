@@ -1,25 +1,27 @@
 import pandas as pd
+import os
 
-# Carregue o arquivo CSV em um DataFrame do Pandas
-df = pd.read_csv('F:\pedro\Documents\Programação\ProjetoIA\I1.csv')
+# Especifique o caminho do diretório que contém o arquivo CSV
+diretorio = "./DataBase"
 
-# Acesse a coluna desejada pelo nome
-coluna_desejada = df['Time']
-# Ou pelo índice
-# coluna_desejada = df.iloc[:, indice_da_coluna]
+# Liste os arquivos no diretório
+arquivos_no_diretorio = os.listdir(diretorio)
 
-# Agora você pode usar coluna_desejada como uma série de dados do Pandas
-print(coluna_desejada)
+# Verifique se há arquivos CSV no diretório
+arquivos_csv = [arquivo for arquivo in arquivos_no_diretorio if arquivo.endswith('.csv')]
 
+# Verifique se pelo menos um arquivo CSV foi encontrado
+if arquivos_csv:
+    # Construa o caminho completo para o primeiro arquivo CSV encontrado
+    caminho_do_csv = os.path.join(diretorio, arquivos_csv[0])
 
-#Iniciando o database
-db = mysql.connector.connect(
-    host="localhost",
-    user="adm",
-    password="adm",
-    database="datafiles"
-)
+    # Carregue o arquivo CSV em um DataFrame do Pandas
+    df = pd.read_csv(caminho_do_csv)
 
-# Criar a tabela de clientes
-cursor = db.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS clientes (id INT AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(255), endereco VARCHAR(255), cpf VARCHAR(11), telefone VARCHAR(11))")
+    # Acesse a coluna desejada pelo nome
+    coluna_desejada = df['Time']
+
+    # Agora você pode usar coluna_desejada como uma série de dados do Pandas
+    print(coluna_desejada)
+else:
+    print("Nenhum arquivo CSV encontrado no diretório.")
