@@ -21,16 +21,20 @@ cursor = db.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS times (Nome VARCHAR(255) PRIMARY KEY)")
 
 def atualizar_db():
-    cursor = db.cursor()
-    df = pd.read_csv(os.path.join(CSVPath, CSVFiles[0]))
-    for index, row in df.iterrows():
-        home_team = row['HomeTeam']
-        away_team = row['AwayTeam']
-        cursor.execute("INSERT IGNORE INTO times (Nome) VALUES (%s)", (home_team,))
-        cursor.execute("INSERT IGNORE INTO times (Nome) VALUES (%s)", (away_team,))
-    
-    db.commit()
+    atualizar_times()
 
+def atualizar_times():
+    cursor = db.cursor()
+    for arquivos_csv in CSVFiles:
+        df = pd.read_csv(os.path.join(CSVPath, arquivos_csv))
+        for index, row in df.iterrows():
+            home_team = row['HomeTeam']
+            away_team = row['AwayTeam']
+            cursor.execute("INSERT IGNORE INTO times (Nome) VALUES (%s)", (home_team,))
+            cursor.execute("INSERT IGNORE INTO times (Nome) VALUES (%s)", (away_team,))
+    db.commit()        
+    
+    
 
 #Inicia-se a janela principal
 root = tk.Tk();
