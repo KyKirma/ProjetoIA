@@ -16,13 +16,16 @@ db = mysql.connector.connect(
 CSVPath = "./DataBase"
 CSVFiles = os.listdir(CSVPath)
 
-# Criar a tabela de times
+# Criar as tabelas
 cursor = db.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS times (Nome VARCHAR(255) PRIMARY KEY)")
+cursor.execute("CREATE TABLE IF NOT EXISTS campeonatos (id INT AUTO_INCREMENT PRIMARY KEY, Ano INT, Regiao VARCHAR(255), Divisao VARCHAR(3))")
 
 def atualizar_db():
     atualizar_times()
+    atualizar_camp()
 
+#Filtrando todos os times existentes.
 def atualizar_times():
     cursor = db.cursor()
     for arquivos_csv in CSVFiles:
@@ -34,7 +37,40 @@ def atualizar_times():
             cursor.execute("INSERT IGNORE INTO times (Nome) VALUES (%s)", (away_team,))
     db.commit()        
     
+def atualizar_camp():
+    regiao = ''
+    cursor = db.cursor()
+
+    #?Filtrar as regiões pelas div dos mesmos.
+    div_to_regiao = {
+    'B': 'Belgica',
+    'D': 'Alemanha',
+    'E': 'Inglaterra',
+    'F': 'França',
+    'G': 'Grecia',
+    'I': 'Italia',
+    'N': 'Holanda',
+    'P': 'Portugal',
+    'SC': 'Escocia',
+    'SP': 'Espanha',
+    'T': 'Turquia',
+}
     
+    for arquivos_csv in CSVFiles:
+        df = pd.read_csv(os.path.join(CSVPath, arquivos_csv))        
+        df['Regiao'] = df['Div'].str.extract(r'(\w+)')[0].map(div_to_regiao)
+        df['Ano'] = df['Date'].str.extract(r'(\d{4})')
+
+        df['Regiao'] = df['Regiao'].fillna('')
+        
+        for index, row in df.iterrows():
+            div = row['Div']
+            regiao = row['Regiao']
+            ano = row['Ano']
+            cursor.execute("INSERT IGNORE INTO campeonatos (Ano) VALUES (%s)", (ano,))
+            cursor.execute("INSERT IGNORE INTO campeonatos (Regiao) VALUES (%s)", (regiao,))
+            cursor.execute("INSERT IGNORE INTO campeonatos (Divisao) VALUES (%s)", (div,))
+    db.commit() 
 
 #Inicia-se a janela principal
 root = tk.Tk();
