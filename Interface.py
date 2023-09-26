@@ -56,12 +56,10 @@ def atualizar_camp():
 }
     
     for arquivos_csv in CSVFiles:
-        df = pd.read_csv(os.path.join(CSVPath, arquivos_csv))   
-        df['Regiao'] = df['Div'].str.extract(r'(\w+)')[0].map(div_to_regiao)
+        df = pd.read_csv(os.path.join(CSVPath, arquivos_csv))
+        df['Regiao'] = df['Div'].str.extract(r'(\D{1,2})\d?')[0].map(div_to_regiao)
         df['Ano'] = df['Date'].str.extract(r'(\d{4})')
 
-        df['Regiao'] = df['Regiao'].fillna('')
-        
         for index, row in df.iterrows():
             div = row['Div']
             regiao = row['Regiao']
@@ -70,11 +68,23 @@ def atualizar_camp():
 
     db.commit() 
 
-def deletarTudo(): #!RESOLVER!!----------------------------------------------
-    cursor.execute("DELETE FROM times")
-    cursor.execute("DELETE FROM campeonatos")
-    db.commit()
+def deletarTudo():
+    try:
+        cursor.execute("DELETE FROM times")
+        cursor.execute("DELETE FROM campeonatos")
+        db.commit()
+    except Exception as e:
+        print(f"Erro ao excluir tabelas: {e}")
+    
     root.destroy()
+
+
+
+
+
+
+
+
 
 #Inicia-se a janela principal
 root = tk.Tk()
