@@ -38,7 +38,6 @@ def atualizar_times():
     db.commit()        
     
 def atualizar_camp():
-    regiao = ''
     cursor = db.cursor()
 
     #?Filtrar as regiões pelas div dos mesmos.
@@ -57,7 +56,7 @@ def atualizar_camp():
 }
     
     for arquivos_csv in CSVFiles:
-        df = pd.read_csv(os.path.join(CSVPath, arquivos_csv))        
+        df = pd.read_csv(os.path.join(CSVPath, arquivos_csv))   
         df['Regiao'] = df['Div'].str.extract(r'(\w+)')[0].map(div_to_regiao)
         df['Ano'] = df['Date'].str.extract(r'(\d{4})')
 
@@ -67,17 +66,23 @@ def atualizar_camp():
             div = row['Div']
             regiao = row['Regiao']
             ano = row['Ano']
-            cursor.execute("INSERT IGNORE INTO campeonatos (Ano) VALUES (%s)", (ano,))
-            cursor.execute("INSERT IGNORE INTO campeonatos (Regiao) VALUES (%s)", (regiao,))
-            cursor.execute("INSERT IGNORE INTO campeonatos (Divisao) VALUES (%s)", (div,))
+            cursor.execute("INSERT IGNORE INTO campeonatos (Ano, Regiao, Divisao) VALUES (%s, %s, %s)", (ano, regiao, div))
+
     db.commit() 
 
+def deletarTudo(): #!RESOLVER!!----------------------------------------------
+    cursor.execute("DELETE FROM times")
+    cursor.execute("DELETE FROM campeonatos")
+    db.commit()
+    root.destroy()
+
 #Inicia-se a janela principal
-root = tk.Tk();
+root = tk.Tk()
 root.geometry("900x600") #Define o tamanho inicial da janela
 root.title("Projeto IA - Protótipo") #Titulo da janela
 root.iconbitmap("./Interface/IFTM.ico") #Icon da janela
 root.minsize(700, 400) #Define o tamanho minimo da janela
+root.protocol("WM_DELETE_WINDOW", deletarTudo) #!RESOLVER!!----------------------------------------------
 
 #As configurações de expansão
 root.grid_rowconfigure(0, weight = 1)
@@ -116,7 +121,7 @@ campCombo.pack(padx = 5, pady = 5, expand = False, fill = "both")
 timeFun.pack(padx = 5, pady = 5, expand = True, fill = "both")
 jogosFun.pack(padx = 5, pady = 5, expand = True, fill = "both")
 
-atualizar_db()
 #====================================================
 
 root.mainloop() #Inicializa a janela principal 
+atualizar_db()
