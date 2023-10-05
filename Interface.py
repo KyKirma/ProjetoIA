@@ -70,8 +70,8 @@ def atualizar_camp():
 
 def deletarTudo():
     try:
-        cursor.execute("DELETE FROM times")
-        cursor.execute("DELETE FROM campeonatos")
+        cursor.execute("DELETE FROM `datafiles`.`campeonatos`")
+        cursor.execute("DELETE FROM `datafiles`.`times`")
         db.commit()
     except Exception as e:
         print(f"Erro ao excluir tabelas: {e}")
