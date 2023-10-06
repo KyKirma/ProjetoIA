@@ -6,8 +6,8 @@ from tkinter import messagebox
 # Conectar ao banco de dados
 db = mysql.connector.connect(
     host="localhost",
-    user="aluno",
-    password="aluno",
+    user="adm",
+    password="adm",
     database="supermercado"
 )
 

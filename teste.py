@@ -1,27 +1,29 @@
-import pandas as pd
-import os
+import tkinter as tk
+from tkinter import ttk
 
-# Especifique o caminho do diretório que contém o arquivo CSV
-diretorio = "./DataBase"
+# Crie a janela principal
+root = tk.Tk()
+root.geometry("400x300")
 
-# Liste os arquivos no diretório
-arquivos_no_diretorio = os.listdir(diretorio)
+# Crie um canvas
+canvas = tk.Canvas(root)
+canvas.pack(fill="both", expand=True)
 
-# Verifique se há arquivos CSV no diretório
-arquivos_csv = [arquivo for arquivo in arquivos_no_diretorio if arquivo.endswith('.csv')]
+# Crie um quadro dentro do canvas
+timeFun = tk.Frame(canvas)
+canvas.create_window((0, 0), window=timeFun, anchor="nw")
 
-# Verifique se pelo menos um arquivo CSV foi encontrado
-if arquivos_csv:
-    # Construa o caminho completo para o primeiro arquivo CSV encontrado
-    caminho_do_csv = os.path.join(diretorio, arquivos_csv[0])
+# Adicione widgets (botoes) ao quadro (você pode adicionar quantos quiser)
+for i in range(20):
+    botao = tk.Button(timeFun, text=f"Botão {i}")
+    botao.pack(side="left", padx=5, pady=5)
 
-    # Carregue o arquivo CSV em um DataFrame do Pandas
-    df = pd.read_csv(caminho_do_csv)
+# Crie uma barra de rolagem horizontal
+scrollbar = ttk.Scrollbar(root, orient="horizontal", command=canvas.xview)
+scrollbar.pack(side="bottom", fill="x")
 
-    # Acesse a coluna desejada pelo nome
-    coluna_desejada = df['Time']
+# Configure o canvas para usar a barra de rolagem horizontal
+canvas.configure(xscrollcommand=scrollbar.set)
 
-    # Agora você pode usar coluna_desejada como uma série de dados do Pandas
-    print(coluna_desejada)
-else:
-    print("Nenhum arquivo CSV encontrado no diretório.")
+# Inicie o loop principal
+root.mainloop()
