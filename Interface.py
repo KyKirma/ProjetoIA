@@ -4,6 +4,7 @@ import mysql.connector
 from tkinter import ttk
 from tkinter import Canvas
 import os
+import re
 
 #Iniciando o database
 db = mysql.connector.connect(
@@ -13,18 +14,18 @@ db = mysql.connector.connect(
     database="datafiles"
 )
 
+cursor = db.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS campeonatos (Divisao VARCHAR(3), Ano INT, Regiao VARCHAR(20), Nome VARCHAR(255), PRIMARY KEY (Divisao, Ano))")
+cursor.execute("CREATE TABLE IF NOT EXISTS times (Nome VARCHAR(255) PRIMARY KEY)")
+cursor.execute("CREATE TABLE IF NOT EXISTS TPC (CampAno INT, Divisao VARCHAR(3), Time VARCHAR(255), PRIMARY KEY (CampAno, Divisao, Time))")
+
 #Pegando os itens da data base
 CSVPath = "./DataBase"
 CSVFiles = os.listdir(CSVPath)
 
 # Criar as tabelas
 def atualizar_db():
-    cursor = db.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS campeonatos (Divisao VARCHAR(3), Ano INT, Regiao VARCHAR(20), Nome VARCHAR(255), PRIMARY KEY (Divisao, Ano))")
-    cursor.execute("CREATE TABLE IF NOT EXISTS times (Nome VARCHAR(255) PRIMARY KEY)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS TPC (CampAno INT, Divisao VARCHAR(3), Time VARCHAR(255), PRIMARY KEY (CampAno, Divisao, Time))")
     atualizar_camp()
-    cursor.close()
 
 
 def atualizar_camp():
@@ -86,17 +87,18 @@ def atualizarCombo():
 
 def criar_frameTimes(frame):
     cursor = db.cursor()
-    cursor.execute("SELECT Time FROM TPC")
+    camp_selecionado = re.search(r'(\D{1,2})\d?', campCombo.get())
+    cursor.execute("SELECT Time FROM TPC WHERE Divisao = %s", (camp_selecionado,))
     times = cursor.fetchall()
-    timesLista = []
-    for i in times:
-        timesLista.append(i[0])
-    
-    for item in timesLista:
-        botao = tk.Button(frame, text=item, width=10, height=6)
-        texto = tk.Label(frame, text=item)
-        botao.pack(side="right")
-        texto.pack(side="right")
+    timesNaDiv = [time[0] for time in times]
+    print(timesNaDiv)
+    print(camp_selecionado)
+    for item in timesNaDiv:
+        box = tk.Frame(frame, width= 100, height= 50)
+        botao = tk.Button(box, text=item, width=10, height=6)
+        texto = tk.Label(box, text=item)
+        botao.pack(padx = 5, pady = 5, expand = True, fill = "both")
+        texto.pack(padx = 5, pady = 5, expand = True, fill = "both")
 
 
 #Inicia-se a janela principal
