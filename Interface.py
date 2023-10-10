@@ -87,19 +87,34 @@ def atualizarCombo():
 
 def criar_frameTimes(frame):
     cursor = db.cursor()
-    camp_selecionado = re.search(r'(\D{1,2})\d?', campCombo.get())
-    cursor.execute("SELECT Time FROM TPC WHERE Divisao = %s", (camp_selecionado,))
+    #Verifica se o valor selecionado na combo existe em alguma div do TPC
+    cursor.execute("SELECT Divisao FROM campeonatos WHERE Nome = %s", (campCombo.get(),))
+    camp_selecionado = cursor.fetchone()
+    cursor.execute("SELECT Time FROM TPC WHERE Divisao = %s", (camp_selecionado[0],)) #por ser uma tupla, devemos selecionar o indice para o acesso do dado
     times = cursor.fetchall()
-    timesNaDiv = [time[0] for time in times]
-    print(timesNaDiv)
-    print(camp_selecionado)
+    timesNaDiv = [time[0] for time in times] #converte a tupla para uma lista
+
+    #verifica se a FunBox está com algum valor, se tiver, deleta todos para a nova consulta
+    if frame_tem_item(frame):
+        widgets_filhos = frame.winfo_children()
+        for widget in widgets_filhos:
+            widget.destroy()
+        
     for item in timesNaDiv:
         box = tk.Frame(frame, width= 100, height= 50)
         botao = tk.Button(box, text=item, width=10, height=6)
         texto = tk.Label(box, text=item)
         botao.pack(padx = 5, pady = 5, expand = True, fill = "both")
         texto.pack(padx = 5, pady = 5, expand = True, fill = "both")
+        box.pack(side="right")
 
+
+def frame_tem_item(frame):
+    # Obtém a lista de widgets filhos do frame
+    widgets_filhos = frame.winfo_children()
+    # Verifica se a lista de widgets filhos não está vazia
+    return len(widgets_filhos) > 0
+    
 
 #Inicia-se a janela principal
 root = tk.Tk()
@@ -140,12 +155,12 @@ jogosLabel.pack(padx = 5, pady = 5, expand = True, fill = "both")
 campCombo = tk.ttk.Combobox(funcaoBox)
 atualizarCombo()
 
-canvaTime = Canvas(funcaoBox)
+scrollbar = ttk.Scrollbar(funcaoBox, orient="horizontal")
+canvaTime = Canvas(funcaoBox, xscrollcommand=scrollbar.set)
 timeFun = tk.Frame(canvaTime)
 canvaTime.create_window((0, 0), window=timeFun, anchor="nw")
 scrollbar = ttk.Scrollbar(timeFun, orient="horizontal", command=canvaTime.xview)
 scrollbar.pack(side="bottom", fill="x")
-canvaTime.configure(xscrollcommand=scrollbar.set)
 
 jogosFun = tk.Button(funcaoBox, text = "Protótipo")
 campCombo.bind("<<ComboboxSelected>>", lambda event, frame=timeFun: criar_frameTimes(frame))
