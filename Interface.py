@@ -75,8 +75,8 @@ def deletarTudo():
     root.destroy()
 
 
-def atualizarCombo():
-    # Carregar os clientes no ComboBox
+def atualizarComboCamp():
+    # Carregar os campeonatos no ComboBox
     cursor = db.cursor()
     cursor.execute("SELECT nome FROM campeonatos")
     campeonatos = cursor.fetchall()
@@ -85,7 +85,7 @@ def atualizarCombo():
         campeonatosLista.append(i[0])
     campCombo["values"] = campeonatosLista
 
-def criar_frameTimes(frame):
+def atualizarComboTime():
     cursor = db.cursor()
     #Verifica se o valor selecionado na combo existe em alguma div do TPC
     cursor.execute("SELECT Divisao FROM campeonatos WHERE Nome = %s", (campCombo.get(),))
@@ -93,28 +93,11 @@ def criar_frameTimes(frame):
     cursor.execute("SELECT Time FROM TPC WHERE Divisao = %s", (camp_selecionado[0],)) #por ser uma tupla, devemos selecionar o indice para o acesso do dado
     times = cursor.fetchall()
     timesNaDiv = [time[0] for time in times] #converte a tupla para uma lista
-
-    #verifica se a FunBox está com algum valor, se tiver, deleta todos para a nova consulta
-    if frame_tem_item(frame):
-        widgets_filhos = frame.winfo_children()
-        for widget in widgets_filhos:
-            widget.destroy()
-        
+    timesLista = []
     for item in timesNaDiv:
-        box = tk.Frame(frame, width= 100, height= 50)
-        botao = tk.Button(box, text=item, width=10, height=6)
-        texto = tk.Label(box, text=item)
-        botao.pack(padx = 5, pady = 5, expand = True, fill = "both")
-        texto.pack(padx = 5, pady = 5, expand = True, fill = "both")
-        box.pack(side="right")
+        timesLista.append(item)
+    timeFun["values"] = timesLista
 
-
-def frame_tem_item(frame):
-    # Obtém a lista de widgets filhos do frame
-    widgets_filhos = frame.winfo_children()
-    # Verifica se a lista de widgets filhos não está vazia
-    return len(widgets_filhos) > 0
-    
 
 #Inicia-se a janela principal
 root = tk.Tk()
@@ -143,33 +126,28 @@ funcaoBox.grid(row = 0, column = 1, sticky="nsew", padx = 20, pady = 20)
 #?Definir os objetos da janela
 #parte esquerda da tela, as labels
 campLabel = tk.Label(textosLabel, text="Campeonato", padx = 3, pady = 3)
-timeLabel = tk.Label(textosLabel, text="Times", padx = 15, pady = 15)
+timeLabel = tk.Label(textosLabel, text="Times", padx = 3, pady = 3)
 jogosLabel = tk.Label(textosLabel, text="Jogos", padx = 15, pady = 15)
 
 #Suas posições na janela
 campLabel.pack(padx = 5, pady = 5, expand = False, fill = "both")
-timeLabel.pack(padx = 5, pady = 5, expand = True, fill = "both")
+timeLabel.pack(padx = 5, pady = 5, expand = False, fill = "both")
 jogosLabel.pack(padx = 5, pady = 5, expand = True, fill = "both")
 
 #parte direita da tela, as caixas funcionais
 campCombo = tk.ttk.Combobox(funcaoBox)
-atualizarCombo()
+atualizarComboCamp()
 
-scrollbar = ttk.Scrollbar(funcaoBox, orient="horizontal")
-canvaTime = Canvas(funcaoBox, xscrollcommand=scrollbar.set)
-timeFun = tk.Frame(canvaTime)
-canvaTime.create_window((0, 0), window=timeFun, anchor="nw")
-scrollbar = ttk.Scrollbar(timeFun, orient="horizontal", command=canvaTime.xview)
-scrollbar.pack(side="bottom", fill="x")
+timeFun = tk.ttk.Combobox(funcaoBox)
 
 jogosFun = tk.Button(funcaoBox, text = "Protótipo")
-campCombo.bind("<<ComboboxSelected>>", lambda event, frame=timeFun: criar_frameTimes(frame))
+
+campCombo.bind("<<ComboboxSelected>>", lambda event, frame=timeFun: atualizarComboTime())
 
 
 #Suas posições na janela
 campCombo.pack(padx = 5, pady = 5, expand = False, fill = "both")
-canvaTime.pack(padx = 5, pady = 5, expand = True, fill = "both")
-timeFun.pack(padx = 5, pady = 5, expand = True, fill = "both")
+timeFun.pack(padx = 5, pady = 5, expand = False, fill = "both")
 jogosFun.pack(padx = 5, pady = 5, expand = True, fill = "both")
 
 #====================================================
