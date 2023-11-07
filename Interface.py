@@ -85,7 +85,7 @@ def atualizarComboCamp():
         campeonatosLista.append(i[0])
     campCombo["values"] = campeonatosLista
 
-def atualizarComboTime(frame):
+def atualizarComboTime():
     cursor = db.cursor()
     #Verifica se o valor selecionado na combo existe em alguma div do TPC
     cursor.execute("SELECT Divisao FROM campeonatos WHERE Nome = %s", (campCombo.get(),))
@@ -95,7 +95,7 @@ def atualizarComboTime(frame):
     timesNaDiv = [time[0] for time in times] #converte a tupla para uma lista
     timesLista = []
     for item in timesNaDiv:
-        timesLista.append(item[0])
+        timesLista.append(item)
     timeFun["values"] = timesLista
 
 
@@ -142,7 +142,7 @@ timeFun = tk.ttk.Combobox(funcaoBox)
 
 jogosFun = tk.Button(funcaoBox, text = "Protótipo")
 
-campCombo.bind("<<ComboboxSelected>>", lambda event, frame=timeFun: atualizarComboTime(frame))
+campCombo.bind("<<ComboboxSelected>>", lambda event, frame=timeFun: atualizarComboTime())
 
 
 #Suas posições na janela
